@@ -1,3 +1,29 @@
+"""
+Hexapawn – turowa, deterministyczna gra dwuosobowa o sumie zerowej z AI.
+
+Zasady gry: https://en.wikipedia.org/wiki/Hexapawn
+Wariant na planszy 3x3, z 3 pionkami na gracza.
+
+AI gra algorytmem Negamax (wariant Minimax, z wbudowanym cięciem alpha-beta)
+z biblioteki easyAI: https://zulko.github.io/easyAI/
+
+Autorzy
+-------
+Maciej Moroz s32006, Paweł Kozłowski s30900
+
+Przygotowanie środowiska
+------------------------
+    python3 -m venv .venv
+    source .venv/bin/activate          # Windows: .venv\\Scripts\\activate
+    pip install -r requirements.txt
+
+Uruchomienie
+------------
+    python hexapawn.py
+
+Ruch wpisujemy jako "pole_startowe>pole_docelowe", np. "b1>b2" (ruch) albo "a1>b2" (bicie).
+
+"""
 from easyAI import TwoPlayerGame, Human_Player, AI_Player, Negamax
 
 class Hexapawn(TwoPlayerGame): #klasa reprezentująca grę Hexapawn, dziedzicząca po TwoPlayerGame
@@ -26,6 +52,12 @@ class Hexapawn(TwoPlayerGame): #klasa reprezentująca grę Hexapawn, dziedziczą
         return rows[alg[1]] * 3 + cols[alg[0]]
 
     def possible_moves(self):
+        """Ta metoda zwraca listę wszystkich legalnych ruchów gracza, który ma teraz turę.
+
+        Returns:
+            list: napisów w notacji algebraicznej (np. "b1>b2"), z których każdy opisuje jeden
+            dozwolony ruch - przesunięcie o jedno pole do przodu albo bicie na skos.
+        """
         moves = []
         for i in range(9):
             if self.board[i] == self.current_player:
@@ -47,9 +79,13 @@ class Hexapawn(TwoPlayerGame): #klasa reprezentująca grę Hexapawn, dziedziczą
                         moves.append(f"{self.idx_to_alg(i)}>{self.idx_to_alg(i + 4)}")
         return moves
 
-    # Metoda pozwalająca na wykonanie ruchu na planszy i zapisywanie stanu planszy w celu rozegrania gry do końca 
-    # i przeszukania rekursywnego w żeby znaleźć najlepszy ruch dla AI. 
     def make_move(self, move):
+        """Ta metoda wykonuje ruch na planszy, zapisując zabity pionek w historii, żeby można było ten ruch później cofnąć.
+
+        Parameters:
+            move (str): ruch w notacji algebraicznej, np. "b1>b2", do wykonania.
+
+        """
         start_alg, end_alg = move.split('>')
         start = self.alg_to_idx(start_alg)
         end = self.alg_to_idx(end_alg)
@@ -58,8 +94,13 @@ class Hexapawn(TwoPlayerGame): #klasa reprezentująca grę Hexapawn, dziedziczą
         self.board[end] = self.current_player
         self.board[start] = 0
 
-    # Metoda pozwalająca na cofnięcie ruchu na planszy i przywrócenie stanu planszy do poprzedniego stanu.
     def unmake_move(self, move):
+        """Ta metoda cofa wykonany ruch i przywraca poprzedni stan planszy.
+
+        Parameters:
+            move (str): ruch w notacji algebraicznej, np. "b1>b2", do cofnięcia.
+
+        """
         start_alg, end_alg = move.split('>')
         start = self.alg_to_idx(start_alg)
         end = self.alg_to_idx(end_alg)
@@ -68,8 +109,14 @@ class Hexapawn(TwoPlayerGame): #klasa reprezentująca grę Hexapawn, dziedziczą
         self.board[start] = self.current_player
         self.board[end] = captured
 
-    # Metoda sprawdzająca, czy obecny gracz przegrał grę. Gracz przegrywa, jeśli jego pionek dotrze do ostatniego rzędu lub jeśli nie ma możliwych ruchów.
     def lose(self):
+        """Ta metoda sprawdza, czy obecny gracz przegrał grę.
+
+            Returns:
+                bool: True, jeśli pionek przeciwnika dotarł do rzędu bazowego gracza na ruchu,
+                albo gracz na ruchu nie ma żadnego możliwego ruchu w przeciwnym razie False.
+
+        """
         if self.current_player == 1:
             if any(self.board[i] == 2 for i in [6, 7, 8]):
                 return True
@@ -83,9 +130,19 @@ class Hexapawn(TwoPlayerGame): #klasa reprezentująca grę Hexapawn, dziedziczą
         return False
 
     def is_over(self):
+        """Ta metoda sprawdza czy gra się zakończyła
+
+
+         Returns:
+             bool: True, jeśli gracz na ruchu przegrał (czyli gra się skończyła) jeśli false gra wciąż trwa.
+
+        """
         return self.lose()
 
     def show(self):
+        """Ta metoda wypisuje w terminalu aktualny stan planszy.
+
+        """
         symbols = {0: '.', 1: 'B', 2: 'C'}
         print("\nBoard:")
         for i in range(3):
@@ -101,10 +158,10 @@ class Hexapawn(TwoPlayerGame): #klasa reprezentująca grę Hexapawn, dziedziczą
 
 if __name__ == "__main__":
     print("=== HEXAPAWN ===")
-    print("Grasz jakgo białe (B). AI gra jako czarne (C).")
+    print("Grasz jako białe (B). AI gra jako czarne (C).")
     print("Wprowadź swój ruch w formacie algebraicznym (np. 'a1>a2').")
     
-    # Inicjalizacja algorytmu Negmax z głębokością 10 - jako że Hexapawn ma udowodnioną maksymalną dłygość gry 9 ruchów, 
+    # Inicjalizacja algorytmu Negamax z głębokością 10 - jako że Hexapawn ma udowodnioną maksymalną długość gry 9 ruchów,
     # głębokość 10 jest wystarczająca do pełnego przeszukania drzewa gry.
     ai_algorithm = Negamax(10)
     game = Hexapawn([Human_Player(), AI_Player(ai_algorithm)])
