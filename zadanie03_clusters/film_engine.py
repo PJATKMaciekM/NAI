@@ -199,7 +199,7 @@ if __name__ == "__main__":
     with open("output2.json", "r", encoding="utf-8") as f:
         dataset = json.load(f)
 
-    person = "Pawel Kozlowski"
+    person = "Paweł Czapiewski"
     recs, antirecs = get_recommendations(dataset, target_user=person, k=4, top_n=5)
 
     print(f"=== Top 5 Rekomedacji dla {person} ===")
