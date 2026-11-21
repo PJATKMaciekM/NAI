@@ -1,3 +1,35 @@
+r"""
+# r znaczy „raw”, czyli surowy tekst
+
+Film engine - rekomendacje filmowe.
+
+Opis problemu:
+    Program rekomenduje filmy na podstawie ocen innych użytkowników, którzy mają podobne gusta filmowe. 
+    Wykorzystuje algorytm k-means do grupowania użytkowników na klastry na podstawie ich ocen filmów, a następnie generuje rekomendacje i antyrekomendacje dla danego użytkownika.
+
+
+Wyjście:
+    - rekomendacje filmowe dla danego użytkownika (filmy, których jeszcze nie ocenił, ale jego rówieśnicy ocenili wysoko)
+    - antyrekomendacje filmowe dla danego użytkownika (filmy, których jeszcze nie ocenił, ale jego rówieśnicy ocenili nisko)
+
+Autorzy:
+    - Paweł Kozłowski, Maciej Moroz
+
+
+Przygotowanie środowiska:
+    0. Zainstaluj Pythona 3: https://www.python.org/downloads/
+    macOS / Linux:
+        python3 -m venv .venv
+        source .venv/bin/activate
+    Windows:
+        python -m venv .venv
+        .venv\Scripts\activate
+    # venv = osobne środowisko z bibliotekami dla projektu, żeby wersje się nie gryzły
+    # activate = włącza to środowisko w terminalu
+
+Uruchomienie:
+    python film_engine.py
+"""
 import json
 import math
 import random
